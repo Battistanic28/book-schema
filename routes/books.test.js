@@ -65,3 +65,51 @@ describe("PUT /:id", function() {
       });
     })
 })
+
+describe("POST /", function() {
+    test("Post new book to list of books.", async function() {
+    const response = await request(app).post("/books").send({
+        "isbn": "123456789",
+        "amazon_url": "http://a.co/newbook",
+        "author": "Nick Battista",
+        "language": "english",
+        "pages": 267,
+        "publisher": "My Publishing Co",
+        "title": "This is my Book",
+        "year": 2021
+      });
+    expect(response.body).toEqual({
+        "book": {
+            "isbn": "123456789",
+            "amazon_url": "http://a.co/newbook",
+            "author": "Nick Battista",
+            "language": "english",
+            "pages": 267,
+            "publisher": "My Publishing Co",
+            "title": "This is my Book",
+            "year": 2021
+        }
+      });
+    })
+})
+
+describe("POST /", function() {
+    test("Tests url validator.", async function() {
+    const response = await request(app).post("/books").send({
+        "isbn": "123456789",
+        "amazon_url": "http://a.co/newbook",
+        "author": "Nick Battista",
+        "language": "english",
+        "pages": "not a num", /* ERROR validator requires type of integer */
+        "publisher": "My Publishing Co",
+        "title": "This is my Book",
+        "year": 2021
+      });
+    expect(response.statusCode).toEqual(500);
+    expect(response.body).toEqual({
+        "error": [
+          "instance.pages is not of a type(s) integer"
+        ]
+      });
+    })
+})
